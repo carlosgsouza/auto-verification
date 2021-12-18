@@ -1,12 +1,8 @@
 package carlosgsouza.autoverification.invariants
 
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 internal class IsNullInvariantHandlerTest {
 
@@ -83,6 +79,11 @@ internal class IsNullInvariantHandlerTest {
         val obsolete = IsNullInvariant("field", isAlwaysNull = false, isNeverNull = false)
         val uninitialized = IsNullInvariant("field", isAlwaysNull = true, isNeverNull = true)
 
+        fun testMerge(i1: IsNullInvariant, i2: IsNullInvariant, expected: IsNullInvariant) {
+            i1.merge(i2)
+            assertThat(i1, equalTo(expected))
+        }
+
         // Merging equal invariants should result in the same invariant
         testMerge(alwaysNull, alwaysNull, alwaysNull)
         testMerge(neverNull, neverNull, neverNull)
@@ -114,8 +115,12 @@ internal class IsNullInvariantHandlerTest {
         testMerge(obsolete, uninitialized, obsolete)
     }
 
-    private fun testMerge(i1: IsNullInvariant, i2: IsNullInvariant, expected: IsNullInvariant) {
-        val result = i1.merge(i2)
-        assertThat(i1, equalTo(expected))
+    @Test
+    fun testToString(){
+        val alwaysNull = IsNullInvariant("field", isAlwaysNull = true, isNeverNull = false)
+        val neverNull = IsNullInvariant("field", isAlwaysNull = false, isNeverNull = true)
+
+        assertThat(alwaysNull.toString(), equalTo("field == null"))
+        assertThat(neverNull.toString(), equalTo("field != null"))
     }
 }

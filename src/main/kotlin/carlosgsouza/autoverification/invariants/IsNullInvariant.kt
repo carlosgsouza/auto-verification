@@ -1,9 +1,15 @@
 package carlosgsouza.autoverification.invariants
 
 data class IsNullInvariant(val fieldName: String, var isAlwaysNull: Boolean = true, var isNeverNull: Boolean = true) {
-    fun merge(other: IsNullInvariant) {
+    internal fun merge(other: IsNullInvariant) {
         this.isAlwaysNull = this.isAlwaysNull && other.isAlwaysNull
         this.isNeverNull = this.isNeverNull && other.isNeverNull
+    }
+
+    override fun toString(): String {
+        if(isAlwaysNull && !isNeverNull) return "$fieldName == null"
+        if(!isAlwaysNull && isNeverNull) return "$fieldName != null"
+        else return super.toString()
     }
 }
 
